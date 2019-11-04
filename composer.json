@@ -1,0 +1,19 @@
+{
+    "name": "fadugyamfi/laravel-api-base",
+    "description": "Laravel Package for easy RESTful API development",
+    "type": "library",
+    "license": "GNU GENERAL PUBLIC LICENSE",
+    "authors": [
+        {
+            "name": "Francis Adu-Gyamfi",
+            "email": "icewalker2g@yahoo.co.uk"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "LaravelApiBase\\": "src/"
+        }
+    }
+}
