@@ -2,7 +2,7 @@
     "name": "fadugyamfi/laravel-api-base",
     "description": "Laravel Package for easy RESTful API development",
     "type": "library",
-    "license": "GNU GENERAL PUBLIC LICENSE",
+    "license": "MIT",
     "authors": [
         {
             "name": "Francis Adu-Gyamfi",
