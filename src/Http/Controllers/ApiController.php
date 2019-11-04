@@ -34,6 +34,9 @@ abstract class ApiController extends BaseController
     }
 
     public function setResource($resource = null) {
+        $packageResNS = "\\LaravelApiBase\\Http\\Resources";
+        $packageReqNS = "\\LaravelApiBase\\Http\\Requests";
+
         $resourceNS = "\\App\\Http\\Resources";
         $requestNS = "\\App\\Http\\Requests";
         $modelClassName = str_replace('App\\Models\\', '', get_class($this->Model));
@@ -53,10 +56,18 @@ abstract class ApiController extends BaseController
                 throw new Exception('Missing resource');
             }
         } catch(\Error | \Exception $e) {
-            $this->Resource = $resourceNS . "\\ApiResource";
+            $this->Resource = $packageResNS . "\\ApiResource";
         }
         
         $this->Request = $requestNS . "\\" . $modelClassName . 'Request';
+
+        try {
+            if( !class_exists($this->Request) ) {
+                throw new Exception('Missing request');
+            }
+        } catch(\Error | \Exception $e) {
+            $this->Request = $packageReqNS . "\\ApiRequest";
+        }
     }
 
     /**
