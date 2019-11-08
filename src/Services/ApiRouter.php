@@ -1,16 +1,10 @@
 <?php 
 
-namespace App\Services;
+namespace LaravelApiBase\Services;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Routing\Router as BaseRouter;
 
 class ApiRouter extends BaseRouter {
-
-    public function __construct(Dispatcher $events)
-    {
-        parent::__construct($events);
-    }
  
     /**
      * Route an API resource to a controller.
@@ -20,7 +14,7 @@ class ApiRouter extends BaseRouter {
      * @param  array  $options
      * @return \Illuminate\Routing\PendingResourceRegistration
      */
-    public function apiResource($name, $controller, array $options = [])
+    public function apiResource($name = null, $controller = null, array $options = [])
     {
         $only = ['index', 'show', 'store', 'update', 'destroy', 'count', 'search'];
 

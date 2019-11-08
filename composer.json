@@ -15,5 +15,12 @@
         "psr-4": {
             "LaravelApiBase\\": "src/"
         }
-    }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaravelApiBase\\Providers\\LaravelApiBaseProvider"
+            ]
+        }
+    } 
 }

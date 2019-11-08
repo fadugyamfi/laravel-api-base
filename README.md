@@ -7,7 +7,7 @@ This library enables you to significantly speed up the development of your RESTf
 Controller, Request, Resource and Model with all the CRUD functionality you will need as well as data search and count endpoints.
 
 
-## Installation
+# Installation
 
 The preferred method of installation is via [Packagist][] and [Composer][]. Run the following command to install the package and add it as a requirement to your project's `composer.json`:
 
@@ -15,11 +15,29 @@ The preferred method of installation is via [Packagist][] and [Composer][]. Run 
 composer require fadugyamfi/laravel-api-base
 ```
 
-## Examples
+Latest Laravel versions have auto dicovery and automatically add service providers, however if you're using Laravel 5.4.x and below, remember to add it to `providers` array at `/app/config/app.php`:
+
+```php
+// ...
+LaravelApiBase\Providers\LaravelApiBaseProvider::class,
+```
+
+Lastly, and most importantly, this package provides an updated `Router`, i.e. `LaravelApiBase\Services\ApiRouter` that you must configure in your `app/bootstrap/app.php` file to get the full benefits of the api. You need to add the following code in the file.
+
+```php
+/**
+ * Important change to ensure the right router version is used with the Laravel API Base package
+ */
+$app->singleton('router', LaravelApiBase\Services\ApiRouter::class);
+
+```
+
+
+# Using the Library
 
 These examples assume you already have your database setup and just need to wire up your Models and Controller. 
 
-### Setting up your Model
+## Setting up your Model
 
 To access the data you will need a model.
 
@@ -39,7 +57,7 @@ class Todo extends ApiModel
 }
 ```
 
-### Setting up Requests for Input Validations
+## Setting up Requests for Input Validations
 
 When creating or updating a record, we often need to validate the inputs. Creating a Request object will enable this to
 happen behind the scenes.
@@ -80,7 +98,7 @@ class TodoRequest extends ApiRequest
 
 ```
 
-### Setting up a JSONResource to format your responses
+## Setting up a JSONResource to format your responses
 
 You can customize the response that comes back to your users by creating a subclass of `LaravelApiBase\Http\Resources\APIResource`
 
@@ -111,7 +129,7 @@ class TodoResource extends ApiResource
 }
 ```
 
-### Setting up your Controller
+## Setting up your Controller
 
 By simply specifying the model to use, the controller will infer any resources or request objects needed and use them for 
 all your restful endpoints
@@ -132,7 +150,7 @@ class TodoController extends ApiController
 }
 ```
 
-### Adding a Route for your Todo endpoint
+## Adding a Route for your Todo endpoint
 
 Once you have everything setup, you can now add a route that will make your resource available. You should potentially add these to
 the `routes/api.php` file.
@@ -147,3 +165,22 @@ use Illuminate\Support\Facades\Route;
 Route::get('todos/search', 'TodoController@search'); // adds a search endpoint with paginated data
 Route::apiResource('todos', 'TodoController'); // adds all the basic endpoints for GET, POST, PUT, DELETE
 ```
+
+### Submitting bugs and feature requests
+
+Bugs and feature request are tracked on [GitHub](https://github.com/fadugyamfi/laravel-api-base/issues)
+
+### Author
+
+Francis Adu-Gyamfi - <https://www.linkedin.com/in/francis-adu-gyamfi-3b782716/><br />
+See also the list of [contributors](https://github.com/fadugyamfi/laravel-api-base/contributors) which participated in this project.
+
+### License
+
+Laravel API Base is licensed under the MIT License - see the `LICENSE` file for details
+
+### Acknowledgements
+
+This library was possible due to the team of developers at Matrix Designs who inspired its creation.
+
+
