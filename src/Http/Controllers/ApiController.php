@@ -211,7 +211,8 @@ abstract class ApiController extends BaseController
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Resource deleted'
+                'message' => 'Resource deleted',
+                'data' => $dataModel
             ]);
         }
 

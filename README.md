@@ -162,8 +162,8 @@ the `routes/api.php` file.
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('todos/search', 'TodoController@search'); // adds a search endpoint with paginated data
-Route::apiResource('todos', 'TodoController'); // adds all the basic endpoints for GET, POST, PUT, DELETE
+// adds all the basic endpoints for GET, POST, PUT, DELETE as well as /search and /count
+Route::apiResource('todos', 'TodoController'); 
 ```
 
 ### Submitting bugs and feature requests
