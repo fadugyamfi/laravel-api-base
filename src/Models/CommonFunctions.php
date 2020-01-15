@@ -10,32 +10,21 @@ trait CommonFunctions
 {
 
     /**
+     * Returns a list of fields that can be searched / filtered by. This includes
+     * all fillable columns and the created_at and updated_at columns
+     */
+    public function searcheableFields() {
+        return array_merge($this->fillable, [$this->getCreatedAtColumn(), $this->getUpdatedAtColumn()]);
+    }
+    
+    /**
      * Retrieves all records based on request data passed in
      */
     public function getAll(Request $request)
     {
-        $limit = $request->limit ?? 15;
-        $conditions = [];
-
-        $builder = $this->where($conditions);
-
-        foreach ($request->all() as $key => $value) {
-
-            if ( \is_string($value) && in_array($key, $this->fillable)) {
-                $data = explode(",", $value);
-
-                if( is_array($data) ) {
-                    $builder = $builder->whereIn($key, $data);
-                } else {
-                    $builder = $builder->where($key, $value);
-                }
-            } 
-        }
-
-        $builder = $this->includeContains($request, $builder);
-        $builder = $this->includeCounts($request, $builder);
-        $builder = $this->applySorts($request, $builder);
-      
+        $limit = $request->limit ?? 30;
+        $builder =  $this->searchBuilder($request);
+        
         return $builder->paginate($limit);
     }
 
@@ -219,7 +208,7 @@ trait CommonFunctions
         ];
 
         foreach ($request->all() as $key => $value) {
-            if (in_array($key, $this->fillable)) {
+            if (in_array($key, $this->searcheableFields())) {
                 switch ($key) {
                   default:
                       $builder->where($key, '=', $value);
@@ -235,7 +224,7 @@ trait CommonFunctions
                 
                 $column_name = Str::replaceLast($op_key,'',$key);
                 
-                if( !in_array($column_name, $this->fillable)){
+                if( !in_array($column_name, $this->searcheableFields())){
                     continue;
                 }
 
@@ -257,12 +246,4 @@ trait CommonFunctions
 
         return $builder;
     }
-
-    public function tapActivity(Activity $activity, string $eventName)
-    {
-        $activity->ip_address = $_SERVER['REMOTE_ADDR'] ?? NULL;
-        $activity->user_agent = $_SERVER['HTTP_USER_AGENT'] ?? NULL;
-        $activity->student_id = $this->student_id ?? null;
-    }
-
 }
