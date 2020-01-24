@@ -67,7 +67,7 @@ happen behind the scenes.
 
 namespace App\Http\Requests;
 
-use LaravelApiBase\ApiRequest;
+use LaravelApiBase\Http\Requests\ApiRequest;
 
 class TodoRequest extends ApiRequest
 {
