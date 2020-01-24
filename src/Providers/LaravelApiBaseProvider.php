@@ -2,10 +2,6 @@
 
 namespace LaravelApiBase\Providers;
 
-use App\Services\ApiRouter as AppApiRouter;
-use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Log;
-use LaravelApiBase\Services\ApiRouter;
 use Illuminate\Support\ServiceProvider;
 use LaravelApiBase\Services\ApiResourceRegistrar;
 

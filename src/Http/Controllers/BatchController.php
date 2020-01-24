@@ -3,6 +3,7 @@
 namespace LaravelApiBase\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use LaravelApiBase\Models\ApiModel;
 
 /**
@@ -36,20 +37,20 @@ class BatchController extends ApiController {
                 $request->replace($req->input());
 
                 // dispatch the new request
-                $response = \Route::dispatch($req)->getContent();
+                $response = Route::dispatch($req)->getContent();
 
                 if (isset($r->request_id)) {
                     $output[$r->request_id] = json_decode($response);
                 } else {
                     $output[] = json_decode($response);
                 }   
-            } catch(Exception $e) {
+            } catch(\Exception $e) {
                 $res = ['status' => 'error', 'message' => $e->getMessage()];
 
                 if (isset($r->request_id)) {
                     $output[$r->request_id] = $res;
                 } else {
-                    $output[] = res;
+                    $output[] = $res;
                 }
             }
         }  

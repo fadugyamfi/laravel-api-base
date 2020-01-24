@@ -4,11 +4,12 @@ namespace LaravelApiBase\Http\Controllers;
 
 use Illuminate\Http\Request;
 use LaravelApiBase\Models\CommonModel;
-use Validator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 abstract class ApiController extends BaseController
 {
@@ -53,7 +54,7 @@ abstract class ApiController extends BaseController
 
         try {
             if( !class_exists($this->Resource) ) {
-                throw new Exception('Missing resource');
+                throw new \Exception('Missing resource');
             }
         } catch(\Error | \Exception $e) {
             $this->Resource = $packageResNS . "\\ApiResource";
@@ -63,7 +64,7 @@ abstract class ApiController extends BaseController
 
         try {
             if( !class_exists($this->Request) ) {
-                throw new Exception('Missing request');
+                throw new \Exception('Missing request');
             }
         } catch(\Error | \Exception $e) {
             $this->Request = $packageReqNS . "\\ApiRequest";

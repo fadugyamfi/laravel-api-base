@@ -5,6 +5,7 @@ namespace LaravelApiBase\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class ApiRequest extends FormRequest
 {
@@ -52,6 +53,6 @@ class ApiRequest extends FormRequest
      * setup in this Request object
      */
     public static function validate($data): Validator {
-        return Validator::make($data, self::rules(), self::messages());
+        return FacadesValidator::make($data, self::rules(), self::messages());
     }
 }
