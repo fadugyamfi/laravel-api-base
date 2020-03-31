@@ -16,7 +16,7 @@ trait CommonFunctions
     public function searcheableFields() {
         return array_merge($this->fillable, [$this->getCreatedAtColumn(), $this->getUpdatedAtColumn()]);
     }
-    
+
     /**
      * Retrieves all records based on request data passed in
      */
@@ -24,7 +24,7 @@ trait CommonFunctions
     {
         $limit = $request->limit ?? 30;
         $builder =  $this->searchBuilder($request);
-        
+
         return $builder->paginate($limit);
     }
 
@@ -106,7 +106,7 @@ trait CommonFunctions
     public function modify(Request $request, $id)
     {
         $dataModel = $this->findOrFail($id);
-      
+
         if (!$dataModel) {
             throw new NotFoundHttpException("Resource not found");
         }
@@ -134,7 +134,7 @@ trait CommonFunctions
                 throw $e;
             }
         }
-      
+
         return false;
     }
 
@@ -160,28 +160,28 @@ trait CommonFunctions
 
         return $arr;
     }
-    
+
 
     public function search(Request $request)
     {
        $limit = $request->limit ?? 30;
        $builder =  $this->searchBuilder($request);
-      
+
         return $builder->paginate($limit);
     }
 
     public function searchBuilder(Request $request) {
-        
+
         $conditions = [];
 
         $builder = $this->where($conditions);
         $builder = $this->buildSearchParams($request, $builder);
         $builder = $this->includeContains($request, $builder);
         $builder = $this->includeCounts($request, $builder);
-        $builder = $this->applySorts($request, $builder); 
+        $builder = $this->applySorts($request, $builder);
         return $builder;
     }
-    
+
 
     public function count(Request $request)
     {
@@ -189,7 +189,7 @@ trait CommonFunctions
 
         $builder = $this->where($conditions);
         $builder = $this->buildSearchParams($request, $builder);
-      
+
         return $builder->count();
     }
 
@@ -221,9 +221,9 @@ trait CommonFunctions
                 if( Str::endsWith($key, $op_key) === false ) {
                     continue;
                 }
-                
+
                 $column_name = Str::replaceLast($op_key,'',$key);
-                
+
                 if( !in_array($column_name, $this->searcheableFields())){
                     continue;
                 }
@@ -232,9 +232,9 @@ trait CommonFunctions
                     $builder->whereIn($column_name, explode(',', $value));
                 } else if( $op_key == '_notIn' ) {
                     $builder->whereNotIn($column_name, explode(',', $value));
-                } else if( $op_key == '_null' ) {
+                } else if( $op_key == '_isNull' ) {
                     $builder->whereNull($column_name);
-                } else if( $op_key == '_notNull' ) {
+                } else if( $op_key == '_isNotNull' ) {
                     $builder->whereNotNull($column_name);
                 } else if( $op_key == '_like' ) {
                     $builder->where($column_name, 'LIKE', "%{$value}%");
