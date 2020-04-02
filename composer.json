@@ -10,7 +10,10 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "illuminate/http": "^5.2|^6|^7",
+        "illuminate/support": "^5.2|^6|^7"
+    },
     "autoload": {
         "psr-4": {
             "LaravelApiBase\\": "src/"
@@ -22,5 +25,5 @@
                 "LaravelApiBase\\Providers\\LaravelApiBaseProvider"
             ]
         }
-    } 
+    }
 }
