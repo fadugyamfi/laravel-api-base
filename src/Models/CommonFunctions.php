@@ -14,7 +14,11 @@ trait CommonFunctions
      * all fillable columns and the created_at and updated_at columns
      */
     public function searcheableFields() {
-        return array_merge($this->fillable, [$this->getCreatedAtColumn(), $this->getUpdatedAtColumn()]);
+        return array_merge($this->fillable, [
+            $this->getPrimaryKeyColumn(),
+            $this->getCreatedAtColumn(),
+            $this->getUpdatedAtColumn()
+        ]);
     }
 
     /**
