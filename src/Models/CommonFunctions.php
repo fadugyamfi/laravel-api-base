@@ -11,11 +11,11 @@ trait CommonFunctions
 
     /**
      * Returns a list of fields that can be searched / filtered by. This includes
-     * all fillable columns and the created_at and updated_at columns
+     * all fillable columns, the primary key column, and the created_at and updated_at columns
      */
     public function searcheableFields() {
         return array_merge($this->fillable, [
-            $this->getPrimaryKeyColumn(),
+            $this->primaryKey,
             $this->getCreatedAtColumn(),
             $this->getUpdatedAtColumn()
         ]);
