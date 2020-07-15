@@ -77,9 +77,9 @@ abstract class ApiController extends BaseController
      * @queryParam limit Total items to return e.g. `?limit=15`. Example: 15
      * @queryParam page Page of items to return e.g. `?page=1`. Example: 1
      * @queryParam sort Sorting options e.g. `?sort=surname:asc,othernames:asc`. Example: id:asc
-     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. Example: null
-     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. Example: null
-     * @queryParam fieldName Pass any field and value to filter results e.g. `name=John&email=any@aol.com`
+     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
+     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
+     * @queryParam fieldName Pass any field and value to filter results e.g. `name=John&email=any@aol.com`. No-example
      *
      * @authenticated
      * @return \Illuminate\Http\Response
@@ -94,8 +94,8 @@ abstract class ApiController extends BaseController
     /**
      * Create Resource
      *
-     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. Example: null
-     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. Example: null
+     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
+     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
      *
      * @authenticated
      * @param  \Illuminate\Foundation\Http\FormRequest  $request
@@ -131,8 +131,8 @@ abstract class ApiController extends BaseController
      * View Resource
      *
      * @queryParam sort Sorting options e.g. `?sort=surname:asc,othernames:asc`. Example: id:asc
-     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. Example: null
-     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. Example: null
+     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
+     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
      *
      * @authenticated
      * @param  int  $id
@@ -155,8 +155,8 @@ abstract class ApiController extends BaseController
     /**
      * Update Resource
      *
-     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. Example: null
-     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. Example: null
+     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
+     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
      *
      * @authenticated
      * @param  \Illuminate\Foundation\Http\FormRequest  $request
@@ -229,8 +229,8 @@ abstract class ApiController extends BaseController
      * @queryParam limit Total items to return e.g. `?limit=15`. Example: 15
      * @queryParam page Page of items to return e.g. `?page=1`. Example: 1
      * @queryParam sort Sorting options e.g. `?sort=surname:asc,othernames:asc`. Example: id:asc
-     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. Example: null
-     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. Example: null
+     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
+     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
      * @queryParam fieldName Pass any field and value to search by e.g. `name=John&email=any@aol.com`. Search logic may use LIKE or `=` depending on field
      *
      * @authenticated
@@ -244,7 +244,7 @@ abstract class ApiController extends BaseController
     /**
      * Count Resources
      *
-     * @queryParam fieldName Pass any field and value to search by e.g. `name=John&email=any@aol.com`. Search logic may use LIKE or `=` depending on field. Example: null
+     * @queryParam fieldName Pass any field and value to search by e.g. `name=John&email=any@aol.com`. Search logic may use LIKE or `=` depending on field. No-example
      *
      * @authenticated
      */
