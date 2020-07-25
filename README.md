@@ -75,27 +75,32 @@ GET /todos?description_isNull       // Get all Todos with a NULL description
 - `_isNull` - IS NULL Operator
 - `_isNotNull - IS NOT NULL Operator
 
-### Including Associated Models 
+### Working With Associated Models 
 You can return any kind of model association that the `with()` operation supports in Laravel Eloquent Models
 
 ```php
-GET /todos?contain=subtask            // Get all Todos with associated subtasks
-GET /todos?contain=subtask.assignee   // Get all Todos with subtasks and subtask assignee
-GET /todos?contain=user,subtask       // Get all Todos with associated users and subtasks
+GET /todos?contain=subtask                   // Get all Todos with associated subtasks
+GET /todos?contain=subtask.assignee          // Get all Todos with subtasks and subtask assignee
+GET /todos?contain=user,subtask              // Get all Todos with associated users and subtasks
 
 // Counting associated models
-GET /todos?count=subtask              // Returns a `subtask_count` property in returned results
+GET /todos?count=subtask                     // Returns a `subtask_count` property in returned results
+
+// Returning Associated Models in response after Creating or Updating a Resource
+POST /todos?contain=subtask                  // Returns a subtask property in the response
+PUT /todos/{id}?contain=subtask.assignee     // Returns a subtask property with its assignee property in the response
 ```
 
 ### Sorting Results
 You can also sort results by any field when querying
 ```php
-GET /todos?sort=id:desc               // Get results sorted by ID Desc
-GET /todos?sort=id:desc,title:asc     // Sort by multiple columns
+GET /todos?sort=id:desc                      // Get results sorted by ID Desc
+GET /todos?sort=id:desc,title:asc            // Sort by multiple columns
 
 ```
 
- 
+# Configuring Your Application
+Now you know what is possible, let's show you how to set everything up so you can try this out. This section assumes you have a database table called `todos`. We'll set up the Model, Controller, FormRequest and JSONResource for that specific endpoint
 
 ## Setting up your Model
 
@@ -121,6 +126,64 @@ class Todo extends ApiModel
     
     public function subtask() {
        return $this->belongsTo(Subtask::class);
+    }
+}
+```
+
+### Observables Are Encouraged
+When working with your API Models, we encourage you to use Observers to listen and react to events in your model for the cleanest code possible. Example:
+
+```php
+<?php
+
+namespace App\Observers;
+
+class TodoObserver
+{
+
+    public function sendReminder(Todo $todo) {
+         // some logic to send a reminder
+    }
+    
+    /**
+     * Sends a reminder when a new Todo is added
+     */
+    public function created(Todo $todo) {
+        $this->sendReminder($todo);
+    }
+    
+    /**
+     * Appends a timestamp at the end of the description
+     */
+    public function updating(Todo $todo) {
+        $todo->description = $todo->description . ' Updated at ' . date('Y-m-d H:i:s');
+    }
+}
+```
+Then in your `app\Providers\EventServiceProvider.php` file, you can connect your Observer to your Model
+
+```php
+<?php
+
+namespace App\Providers;
+
+use App\Models\Todo;
+use App\Observers\TodoObserver;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+
+class EventServiceProvider extends ServiceProvider
+{
+
+    /**
+     * Register any events for your application.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        parent::boot();
+
+        Todo::observe(TodoObserver::class);
     }
 }
 ```
@@ -171,7 +234,6 @@ class TodoRequest extends ApiRequest
 You can customize the response that comes back to your users by creating a subclass of `LaravelApiBase\Http\Resources\APIResource`
 
 ```php
-
 <?php
 
 namespace App\Http\Resources;
@@ -215,6 +277,8 @@ class TodoController extends ApiController
     public function __construct(Todo $todo) {
         parent::__construct($todo);
     }
+    
+    // you can add additional methods here as needed and connect them in your routes file
 }
 ```
 
@@ -238,6 +302,15 @@ class TodoController extends ApiController
         $this->Request = SpecialTodoRequest::class;
         $this->Resource = SpecialTodoResource::class;
     }
+    
+    /**
+     * Hypothetical Method To Return Subtasks
+     */
+    public function subtasks(Request $request, $id) {
+        $subtasks = Todo::find($id)->subtasks;
+        
+        return $this->Resource::collection($subtasks);
+    }
 }
 ```
 
@@ -252,6 +325,9 @@ the `routes/api.php` file.
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+// Add a special endpoint for returns subtasks of a Todo. These must come BEFORE the apiResource call
+Route::get('todos/{id}/subtasks', 'TodoController@subtasks");
 
 // adds all the basic endpoints for GET, POST, PUT, DELETE as well as /search and /count
 Route::apiResource('todos', 'TodoController'); 
