@@ -40,28 +40,28 @@ Once your API endpoints are configured you can make the following requests easil
 
 ### Standard RESTful API Requests
 ```php
-GET /todos // Gets a paginated list to Todo items
-GET /todos/{id} // Get a specific Todo item by ID
-POST /todos // Create a new Todo record 
-PUT /todos/{id} // Update a Todo record 
+GET /todos         // Gets a paginated list to Todo items
+GET /todos/{id}    // Get a specific Todo item by ID
+POST /todos        // Create a new Todo record 
+PUT /todos/{id}    // Update a Todo record 
 DELETE /todos/{id} // Delete a Todo record
 ```
 
 ### Querying and Paginating Results
 This is where the package shines and enables you to flexible work with your API Endpoints 
 ```php
-GET /todos?limit=5 // get the first 5 items
-GET /todos?page=3&limit=3 // get page 3 of items with only 3 items
+GET /todos?limit=5         // Get the first 5 items
+GET /todos?page=3&limit=3  // Get page 3 of items with only 3 items
 ```
 ### Searching/Filtering Data 
 You can search and filter data using any field that is included in the model `$fillables` and apply operators to them to enhance the queries
 
 ```php
-GET /todos?title=My Todo // get all Todos with a title "My Todo" 
-GET /todos?description_like=Call // returns any todos with the word "call" in the description
-GET /todos?id_gt=5&title_like=John // Gets all todos with an ID greater than 5 and have "John" in the title
-GET /todos?id_in=1,3,5 // Gets a specific set of todos by ID
-GET /todos?description_isNull // Get all Todos with a NULL description
+GET /todos?title=My Todo            // Get all Todos with a title "My Todo" 
+GET /todos?description_like=Call    // Returns any todos with the word "call" in the description
+GET /todos?id_gt=5&title_like=John  // Gets all todos with an ID greater than 5 and have "John" in the title
+GET /todos?id_in=1,3,5              // Gets a specific set of todos by ID
+GET /todos?description_isNull       // Get all Todos with a NULL description
 ```
 #### Available Search Operators
 - `_like` - Use a `LIKE %{term}%` operation
@@ -79,19 +79,19 @@ GET /todos?description_isNull // Get all Todos with a NULL description
 You can return any kind of model association that the `with()` operation supports in Laravel Eloquent Models
 
 ```php
-GET /todos?contain=subtask // get all Todos with associated subtasks
-GET /todos?contain=subtask.assignee // get all Todos with subtasks and subtask assignee
-GET /todos?contain=user,subtask // Get all Todos with associated users and subtasks
+GET /todos?contain=subtask            // Get all Todos with associated subtasks
+GET /todos?contain=subtask.assignee   // Get all Todos with subtasks and subtask assignee
+GET /todos?contain=user,subtask       // Get all Todos with associated users and subtasks
 
 // Counting associated models
-GET /todos?count=subtask // Returns a `subtask_count` property in returned results
+GET /todos?count=subtask              // Returns a `subtask_count` property in returned results
 ```
 
 ### Sorting Results
 You can also sort results by any field when querying
 ```php
-GET /todos?sort=id:desc // Get results sorted by ID Desc
-GET /todos?sort=id:desc,title:asc // Sort by multiple columns
+GET /todos?sort=id:desc               // Get results sorted by ID Desc
+GET /todos?sort=id:desc,title:asc     // Sort by multiple columns
 
 ```
 
@@ -114,6 +114,14 @@ class Todo extends ApiModel
     protected $table = 'todos';
 
     protected $fillable = ['title', 'description'];
+    
+    public function user() {
+       return $this->belongsTo(User::class);
+    }
+    
+    public function subtask() {
+       return $this->belongsTo(Subtask::class);
+    }
 }
 ```
 
@@ -149,8 +157,8 @@ class TodoRequest extends ApiRequest
     public function rules()
     {
         return [
-            'title'=>'required|string',
-            'description'=>'required|string'
+            'title' => 'required|string',
+            'description' => 'required|string'
         ];
     }
 
@@ -210,7 +218,30 @@ class TodoController extends ApiController
 }
 ```
 
-## Adding a Route for your Todo endpoint
+If your Request and Resource classes do not live in the default directories, i.e. `App\Http\Requests` and `App\Http\Resources`, you can override the automatic path resolution by in your Controller `__construct()` function
+
+```php
+<?php 
+
+namespace App\Http\Controllers;
+
+use App\Models\Todo;
+use App\Http\Requests\Specials\SpecialTodoRequest;
+use App\Http\Resources\Specials\SpecialTodoResource;
+use LaravelApiBase\Http\Controllers\ApiController;
+
+class TodoController extends ApiController
+{
+    public function __construct(Todo $todo) {
+        parent::__construct($todo);
+        
+        $this->Request = SpecialTodoRequest::class;
+        $this->Resource = SpecialTodoResource::class;
+    }
+}
+```
+
+## Configuring the Routes for your Todo endpoint
 
 Once you have everything setup, you can now add a route that will make your resource available. You should potentially add these to
 the `routes/api.php` file.
@@ -225,6 +256,7 @@ use Illuminate\Support\Facades\Route;
 // adds all the basic endpoints for GET, POST, PUT, DELETE as well as /search and /count
 Route::apiResource('todos', 'TodoController'); 
 ```
+
 
 
 ### Submitting bugs and feature requests
