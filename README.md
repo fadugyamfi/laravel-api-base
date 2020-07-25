@@ -272,6 +272,10 @@ namespace App\Http\Controllers;
 use App\Models\Todo;
 use LaravelApiBase\Http\Controllers\ApiController;
 
+/**
+ * By default, this Controller with locate the `App\Http\Requests\TodoRequest` and `App\Http\Resources\TodoResource` 
+ * classes and use them for Request Validation and Response Formatting.
+ */
 class TodoController extends ApiController
 {
     public function __construct(Todo $todo) {
@@ -279,6 +283,15 @@ class TodoController extends ApiController
     }
     
     // you can add additional methods here as needed and connect them in your routes file
+    
+    /**
+     * Hypothetical Method To Return Subtasks
+     */
+    public function subtasks(Request $request, $id) {
+        $subtasks = Todo::find($id)->subtasks;
+        
+        return $this->Resource::collection($subtasks);
+    }
 }
 ```
 
@@ -301,15 +314,6 @@ class TodoController extends ApiController
         
         $this->Request = SpecialTodoRequest::class;
         $this->Resource = SpecialTodoResource::class;
-    }
-    
-    /**
-     * Hypothetical Method To Return Subtasks
-     */
-    public function subtasks(Request $request, $id) {
-        $subtasks = Todo::find($id)->subtasks;
-        
-        return $this->Resource::collection($subtasks);
     }
 }
 ```
