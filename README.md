@@ -166,6 +166,28 @@ use Illuminate\Support\Facades\Route;
 Route::apiResource('todos', 'TodoController'); 
 ```
 
+## Making Requests to the API
+Once your api endpoints are configured you can make the following requests easily
+
+```php
+
+// The standard stuff
+GET /todos // Gets a paginated list to Todo items
+GET /todos/{id} // Get a specific Todo item by ID
+POST /todos // Create a new Todo record 
+PUT /todos/{id} // Update a Todo record 
+DELETE /todos/{id} // Delete a Todo record
+
+// The more fun STUFF querying the API
+GET /todos?limit=5 // get the first 5 items
+GET /todos?page=3&limit=3 // get page 3 of items with only 3 items
+GET /todos?title=My Todo // get all Todos with a title "My Todo" 
+GET /todos?description_like=Call // returns any todos with the word "call" in the description
+GET /todos?id_gt=5&title_like=John // Gets all todos with an ID greater than 5 and have "John" in the title
+```
+
+
+
 ### Submitting bugs and feature requests
 
 Bugs and feature request are tracked on [GitHub](https://github.com/fadugyamfi/laravel-api-base/issues)
