@@ -3,7 +3,7 @@ Laravel Package For Easy RESTful API Development
 
 ## About
 
-This library enables you to significantly speed up the development of your RESTful API with Laravel by providing you the base 
+This library enables you to significantly speed up the development of your RESTful API with Laravel by providing you the base
 Controller, Request, Resource and Model with all the CRUD functionality you will need as well as data search and count endpoints.
 
 # Installation
@@ -42,29 +42,29 @@ Once your API endpoints are configured you can make the following requests easil
 ```php
 GET /todos         // Gets a paginated list to Todo items
 GET /todos/{id}    // Get a specific Todo item by ID
-POST /todos        // Create a new Todo record 
-PUT /todos/{id}    // Update a Todo record 
+POST /todos        // Create a new Todo record
+PUT /todos/{id}    // Update a Todo record
 DELETE /todos/{id} // Delete a Todo record
 ```
 
 ### Querying and Paginating Results
-This is where the package shines and enables you to flexible work with your API Endpoints 
+This is where the package shines and enables you to flexible work with your API Endpoints
 ```php
 GET /todos?limit=5         // Get the first 5 items
 GET /todos?page=3&limit=3  // Get page 3 of items with only 3 items
 ```
-### Searching/Filtering Data 
+### Searching/Filtering Data
 You can search and filter data using any field that is included in the model `$fillables` and apply operators to them to enhance the queries
 
 ```php
-GET /todos?title=My Todo            // Get all Todos with a title "My Todo" 
+GET /todos?title=My Todo            // Get all Todos with a title "My Todo"
 GET /todos?description_like=Call    // Returns any todos with the word "call" in the description
 GET /todos?id_gt=5&title_like=John  // Gets all todos with an ID greater than 5 and have "John" in the title
 GET /todos?id_in=1,3,5              // Gets a specific set of todos by ID
 GET /todos?description_isNull       // Get all Todos with a NULL description
 ```
 #### Available Search Operators
-- `_like` - Use a `LIKE %{term}%` operation
+- `_like` - Use a `LIKE {term}%` operation
 - `_gt` - Greater Than Operator
 - `_gte` - Greater Than or Equal To Operator
 - `_lt` - Less Than Operator
@@ -73,9 +73,9 @@ GET /todos?description_isNull       // Get all Todos with a NULL description
 - `_notIn` - NOT IN Operator
 - `_not` - NOT Operator
 - `_isNull` - IS NULL Operator
-- `_isNotNull - IS NOT NULL Operator
+- `_isNotNull` - IS NOT NULL Operator
 
-### Working With Associated Models 
+### Working With Associated Models
 You can return any kind of model association that the `with()` operation supports in Laravel Eloquent Models
 
 ```php
@@ -89,6 +89,9 @@ GET /todos?count=subtask                     // Returns a `subtask_count` proper
 // Returning Associated Models in response after Creating or Updating a Resource
 POST /todos?contain=subtask                  // Returns a subtask property in the response
 PUT /todos/{id}?contain=subtask.assignee     // Returns a subtask property with its assignee property in the response
+
+// Return associations from models with longer names
+GET /todos?contain=todo-category             // Underscore or Hyphens are both supported
 ```
 
 ### Sorting Results
@@ -119,13 +122,17 @@ class Todo extends ApiModel
     protected $table = 'todos';
 
     protected $fillable = ['title', 'description'];
-    
+
     public function user() {
        return $this->belongsTo(User::class);
     }
-    
+
     public function subtask() {
-       return $this->belongsTo(Subtask::class);
+       return $this->hasMany(Subtask::class);
+    }
+
+    public function todoCategory() {
+       return $this->belongsTo(TodoCategory::class);
     }
 }
 ```
@@ -144,14 +151,14 @@ class TodoObserver
     public function sendReminder(Todo $todo) {
          // some logic to send a reminder
     }
-    
+
     /**
      * Sends a reminder when a new Todo is added
      */
     public function created(Todo $todo) {
         $this->sendReminder($todo);
     }
-    
+
     /**
      * Appends a timestamp at the end of the description
      */
@@ -261,11 +268,11 @@ class TodoResource extends ApiResource
 
 ## Setting up your Controller
 
-By simply specifying the model to use, the controller will infer any resources or request objects needed and use them for 
+By simply specifying the model to use, the controller will infer any resources or request objects needed and use them for
 all your restful endpoints
 
 ```php
-<?php 
+<?php
 
 namespace App\Http\Controllers;
 
@@ -273,7 +280,7 @@ use App\Models\Todo;
 use LaravelApiBase\Http\Controllers\ApiController;
 
 /**
- * By default, this Controller with locate the `App\Http\Requests\TodoRequest` and `App\Http\Resources\TodoResource` 
+ * By default, this Controller with locate the `App\Http\Requests\TodoRequest` and `App\Http\Resources\TodoResource`
  * classes and use them for Request Validation and Response Formatting.
  */
 class TodoController extends ApiController
@@ -281,15 +288,15 @@ class TodoController extends ApiController
     public function __construct(Todo $todo) {
         parent::__construct($todo);
     }
-    
+
     // you can add additional methods here as needed and connect them in your routes file
-    
+
     /**
      * Hypothetical Method To Return Subtasks
      */
     public function subtasks(Request $request, $id) {
         $subtasks = Todo::find($id)->subtasks;
-        
+
         return $this->Resource::collection($subtasks);
     }
 }
@@ -298,7 +305,7 @@ class TodoController extends ApiController
 If your Request and Resource classes do not live in the default directories, i.e. `App\Http\Requests` and `App\Http\Resources`, you can override the automatic path resolution by in your Controller `__construct()` function
 
 ```php
-<?php 
+<?php
 
 namespace App\Http\Controllers;
 
@@ -311,7 +318,7 @@ class TodoController extends ApiController
 {
     public function __construct(Todo $todo) {
         parent::__construct($todo);
-        
+
         $this->Request = SpecialTodoRequest::class;
         $this->Resource = SpecialTodoResource::class;
     }
@@ -331,10 +338,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Add a special endpoint for returns subtasks of a Todo. These must come BEFORE the apiResource call
-Route::get('todos/{id}/subtasks', 'TodoController@subtasks");
+Route::get('todos/{id}/subtasks', 'TodoController@subtasks');
 
 // adds all the basic endpoints for GET, POST, PUT, DELETE as well as /search and /count
-Route::apiResource('todos', 'TodoController'); 
+Route::apiResource('todos', 'TodoController');
 ```
 
 
@@ -355,5 +362,3 @@ Laravel API Base is licensed under the MIT License - see the `LICENSE` file for 
 ### Acknowledgements
 
 This library was possible due to the team of developers at Matrix Designs who inspired its creation.
-
-

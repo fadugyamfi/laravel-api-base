@@ -38,6 +38,13 @@ trait CommonFunctions
             foreach($contains as $contain) {
                 if( \method_exists($this, $contain) || strpos($contain, '.') !== false ) {
                     $builder->with(trim($contain));
+                    continue;
+                }
+
+                $camelVersion = Str::camel(trim($contain));
+                if( \method_exists($this, $camelVersion) || strpos($contain, '.') !== false ) {
+                    $builder->with($camelVersion);
+                    continue;
                 }
             }
         }
@@ -54,6 +61,13 @@ trait CommonFunctions
             foreach($counters as $counter) {
                 if( \method_exists($this, $counter) ) {
                     $builder->withCount($counter);
+                    continue;
+                }
+
+                $camelVersion = Str::camel($counter);
+                if( \method_exists($this, $camelVersion) ) {
+                    $builder->withCount($camelVersion);
+                    continue;
                 }
             }
         }
@@ -222,6 +236,9 @@ trait CommonFunctions
 
             // apply special operators based on the column name passed
             foreach($operators as $op_key => $op_type) {
+                $key = strtolower($key);
+                $op_key = strtolower($op_key);
+
                 if( Str::endsWith($key, $op_key) === false ) {
                     continue;
                 }
@@ -234,14 +251,14 @@ trait CommonFunctions
 
                 if( $op_key == '_in' ) {
                     $builder->whereIn($column_name, explode(',', $value));
-                } else if( $op_key == '_notIn' ) {
+                } else if( $op_key == strtolower('_notIn') ) {
                     $builder->whereNotIn($column_name, explode(',', $value));
-                } else if( $op_key == '_isNull' ) {
+                } else if( $op_key == strtolower('_isNull') ) {
                     $builder->whereNull($column_name);
-                } else if( $op_key == '_isNotNull' ) {
+                } else if( $op_key == strtolower('_isNotNull') ) {
                     $builder->whereNotNull($column_name);
                 } else if( $op_key == '_like' ) {
-                    $builder->where($column_name, 'LIKE', "%{$value}%");
+                    $builder->where($column_name, 'LIKE', "{$value}%");
                 } else {
                     $builder->where($column_name, $op_type, $value);
                 }

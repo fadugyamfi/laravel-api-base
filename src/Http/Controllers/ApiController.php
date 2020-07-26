@@ -74,7 +74,18 @@ abstract class ApiController extends BaseController
     /**
      * Get All
      *
-     * @queryParam limit Total items to return e.g. `?limit=15`. Example: 15
+     * Returns a list of items in this resource and allows filtering the data based on fields in the database
+     *
+     * Options for searching / filtering
+     * - By field name: e.g. `?name=John` - Specific search
+     * - By field name with `LIKE` operator: e.g. `?name_like=John` - Fuzzy search
+     * - By field name with `!=` operator: e.g. `?age_not=5`
+     * - By field name with `>` or `<` operator: e.g. `?age_gt=5` or `?age_lt=10`
+     * - By field name with `>=` or `<=` operator: e.g. `?age_gte=5` or `?age_lte=10`
+     * - By field name with `IN` or `NOT IN` operator: e.g. `?id_in=1,3,5` or `?id_notIn=2,4`
+     * - By field name with `NULL` or `NOT NULL` operator: e.g. `?email_isNull` or `?email_isNotNull`
+     *
+     * @queryParam limit Total items to return e.g. `?limit=15`. Example: 3
      * @queryParam page Page of items to return e.g. `?page=1`. Example: 1
      * @queryParam sort Sorting options e.g. `?sort=surname:asc,othernames:asc`. Example: id:asc
      * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
@@ -93,6 +104,9 @@ abstract class ApiController extends BaseController
 
     /**
      * Create Resource
+     *
+     * Create a new record of this resource in the database. You can return related data or counts of related data
+     * in the response using the `count` and `contain` query params
      *
      * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
      * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
@@ -130,7 +144,9 @@ abstract class ApiController extends BaseController
     /**
      * View Resource
      *
-     * @queryParam sort Sorting options e.g. `?sort=surname:asc,othernames:asc`. Example: id:asc
+     * Returns information about a specific record in this resource. You can return related data or counts of related data
+     * in the response using the `count` and `contain` query params
+     *
      * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
      * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
      *
@@ -154,6 +170,9 @@ abstract class ApiController extends BaseController
 
     /**
      * Update Resource
+     *
+     * Updates the data of the record with the specified `id`. You can return related data or counts of related data
+     * in the response using the `count` and `contain` query params
      *
      * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
      * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
@@ -199,6 +218,8 @@ abstract class ApiController extends BaseController
     /**
      * Delete Resource
      *
+     * Deletes the record with the specified `id`
+     *
      * @authenticated
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -226,7 +247,18 @@ abstract class ApiController extends BaseController
     /**
      * Search Resources
      *
-     * @queryParam limit Total items to return e.g. `?limit=15`. Example: 15
+     * Allows searching for data in this resource using multiple options.
+     *
+     * Options for searching
+     * - By field name: e.g. `?name=John` - Specific search
+     * - By field name with `LIKE` operator: e.g. `?name_like=John` - Fuzzy search
+     * - By field name with `!=` operator: e.g. `?age_not=5`
+     * - By field name with `>` or `<` operator: e.g. `?age_gt=5` or `?age_lt=10`
+     * - By field name with `>=` or `<=` operator: e.g. `?age_gte=5` or `?age_lte=10`
+     * - By field name with `IN` or `NOT IN` operator: e.g. `?id_in=1,3,5` or `?id_notIn=2,4`
+     * - By field name with `NULL` or `NOT NULL` operator: e.g. `?email_isNull` or `?email_isNotNull`
+     *
+     * @queryParam limit Total items to return e.g. `?limit=15`. Example: 3
      * @queryParam page Page of items to return e.g. `?page=1`. Example: 1
      * @queryParam sort Sorting options e.g. `?sort=surname:asc,othernames:asc`. Example: id:asc
      * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
@@ -243,6 +275,8 @@ abstract class ApiController extends BaseController
 
     /**
      * Count Resources
+     *
+     * Returns a simple count of data in this resource
      *
      * @queryParam fieldName Pass any field and value to search by e.g. `name=John&email=any@aol.com`. Search logic may use LIKE or `=` depending on field. No-example
      *
