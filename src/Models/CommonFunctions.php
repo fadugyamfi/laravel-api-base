@@ -36,14 +36,22 @@ trait CommonFunctions
         if( $request->contain ) {
             $contains = explode(',', $request->contain);
             foreach($contains as $contain) {
-                if( \method_exists($this, $contain) || strpos($contain, '.') !== false ) {
-                    $builder->with(trim($contain));
+                $camelVersion = Str::camel(trim($contain));
+                if( \method_exists($this, $camelVersion) || strpos($contain, '.') !== false ) {
+                    if(strpos($contain, '.') !== false) {
+                        $parts = explode('.', $contain);
+                        $parts = array_map(function($part) {
+                            return Str::camel($part);
+                        }, $parts);
+                        $contain = implode(".", $parts);
+                    }
+
+                    $builder->with($camelVersion);
                     continue;
                 }
 
-                $camelVersion = Str::camel(trim($contain));
-                if( \method_exists($this, $camelVersion) || strpos($contain, '.') !== false ) {
-                    $builder->with($camelVersion);
+                if( \method_exists($this, $contain) || strpos($contain, '.') !== false ) {
+                    $builder->with(trim($contain));
                     continue;
                 }
             }
