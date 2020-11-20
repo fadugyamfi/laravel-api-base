@@ -1,7 +1,8 @@
-<?php 
+<?php
 
 namespace LaravelApiBase\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use LaravelApiBase\Models\ApiModel;
@@ -9,11 +10,7 @@ use LaravelApiBase\Models\ApiModel;
 /**
  * @group Batch Requests
  */
-class BatchController extends ApiController {
-
-    public function __construct(ApiModel $model) {
-        parent::__construct($model);
-    }
+class BatchController extends Controller {
 
     /**
      * Batch Request
@@ -29,10 +26,10 @@ class BatchController extends ApiController {
                 if( is_object($r) && !isset($r->url) ) {
                     continue;
                 }
-                
+
                 $params = $r->params ?? [];
                 $req = Request::create($r->url, $r->method, $params);
-                
+
                 // replace the inputs in the current request and set
                 $request->replace($req->input());
 
@@ -43,7 +40,7 @@ class BatchController extends ApiController {
                     $output[$r->request_id] = json_decode($response);
                 } else {
                     $output[] = json_decode($response);
-                }   
+                }
             } catch(\Exception $e) {
                 $res = ['status' => 'error', 'message' => $e->getMessage()];
 
@@ -53,7 +50,7 @@ class BatchController extends ApiController {
                     $output[] = $res;
                 }
             }
-        }  
+        }
 
         return response()->json(array('responses' => $output));
     }

@@ -1,11 +1,11 @@
-<?php 
+<?php
 
 namespace LaravelApiBase\Services;
 
 use Illuminate\Routing\Router as BaseRouter;
 
 class ApiRouter extends BaseRouter {
- 
+
     /**
      * Route an API resource to a controller.
      *
@@ -14,7 +14,7 @@ class ApiRouter extends BaseRouter {
      * @param  array  $options
      * @return \Illuminate\Routing\PendingResourceRegistration
      */
-    public function apiResource($name = null, $controller = null, array $options = [])
+    public function apiResource($name, $controller, array $options = [])
     {
         $only = ['index', 'show', 'store', 'update', 'destroy', 'count', 'search'];
 
