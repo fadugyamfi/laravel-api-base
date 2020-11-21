@@ -15,8 +15,7 @@ abstract class ApiController extends BaseController
 
     public function __construct(ApiModelInterface $model, String $resource = null)
     {
-        $this->Model = $model;
-
+        $this->setApiModel($model);
         $this->setResource($resource);
     }
 }

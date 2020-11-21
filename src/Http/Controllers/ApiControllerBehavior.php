@@ -68,16 +68,31 @@ trait ApiControllerBehavior
         }
     }
 
-    public function setApiFormRequest(string $request)
+    /**
+     * Set the FormRequest object to use.
+     *
+     * @param FormRequest|string $request
+     */
+    public function setApiFormRequest($request)
     {
-        $this->Request = $request;
+        $this->Request = is_object($request) ? get_class($request) : $request;
     }
 
-    public function setApiResource(string $resource)
+    /**
+     * Set the Resource object to use
+     *
+     * @param Resource|string $resources
+     */
+    public function setApiResource($resource)
     {
-        $this->Resource = $resource;
+        $this->Resource = is_object($resource) ? get_class($resource) : $resource;
     }
 
+    /**
+     * Set the model instance to use
+     *
+     * @param ApiModelInterface $model The Model Instance
+     */
     public function setApiModel(ApiModelInterface $model)
     {
         $this->Model = $model;
@@ -120,14 +135,26 @@ trait ApiControllerBehavior
      * Create a new record of this resource in the database. You can return related data or counts of related data
      * in the response using the `count` and `contain` query params
      *
+     * @authenticated
      * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
      * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
      *
-     * @authenticated
-     * @param  \LaravelApiBase\Http\Requests\ApiRequest $request
+     * @response 400 {
+     *  "status": "error",
+     *  "message": [
+     *     "validation error message"
+     *  ]
+     * }
+     *
+     * @response 500 {
+     *  "status": "error",
+     *  "message": "Details of error message"
+     * }
+     *
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ApiRequest $request)
+    public function store(Request $request)
     {
         try {
             if (class_exists($this->Request)) {
@@ -159,10 +186,16 @@ trait ApiControllerBehavior
      * Returns information about a specific record in this resource. You can return related data or counts of related data
      * in the response using the `count` and `contain` query params
      *
+     * @authenticated
      * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
      * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
+     * @urlParam id integer required The id of the resource to view
      *
-     * @authenticated
+     * @response 404 {
+     *  "status": "failed",
+     *  "message": "Resource not found"
+     * }
+     *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -186,15 +219,32 @@ trait ApiControllerBehavior
      * Updates the data of the record with the specified `id`. You can return related data or counts of related data
      * in the response using the `count` and `contain` query params
      *
+     * @authenticated
      * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
      * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
      *
-     * @authenticated
-     * @param  \Illuminate\Foundation\Http\FormRequest  $request
+     * @response 400 {
+     *  "status": "error",
+     *  "message": [
+     *     "validation error messages"
+     *  ]
+     * }
+     *
+     * @response 404 {
+     *  "status": "failed",
+     *  "message": "Resource not found"
+     * }
+     *
+     * @response 500 {
+     *  "status": "error",
+     *  "message": "Details of error message"
+     * }
+     *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ApiRequest $request, $id)
+    public function update(Request $request, $id)
     {
         try {
 
@@ -231,6 +281,20 @@ trait ApiControllerBehavior
      * Deletes the record with the specified `id`
      *
      * @authenticated
+     *
+     * @response {
+     *  "status": "success",
+     *  "message": "Resource deleted",
+     *  "data": {
+     *     "id": 1
+     *  }
+     * }
+     *
+     * @response 404 {
+     *  "status": "failed",
+     *  "message": "Resource not found"
+     * }
+     *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
