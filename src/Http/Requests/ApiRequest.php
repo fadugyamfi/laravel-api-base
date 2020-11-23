@@ -27,7 +27,7 @@ class ApiRequest extends FormRequest implements ApiFormRequest
         return [];
     }
 
-    public function bodyParameters() {
+    public function bodyParameters(): array {
         return [];
     }
 }
