@@ -63,20 +63,22 @@ trait ApiModelBehavior
     public function includeCounts($request, $builder) {
         $count_info = $request->count ?? $request->with_count ?? null;
 
-        if( $count_info ) {
-            $counters = explode(",", $count_info);
+        if( !$count_info ) {
+            return $builder;
+        }
 
-            foreach($counters as $counter) {
-                if( \method_exists($this, $counter) ) {
-                    $builder->withCount($counter);
-                    continue;
-                }
+        $counters = explode(",", $count_info);
 
-                $camelVersion = Str::camel($counter);
-                if( \method_exists($this, $camelVersion) ) {
-                    $builder->withCount($camelVersion);
-                    continue;
-                }
+        foreach($counters as $counter) {
+            if( \method_exists($this, $counter) ) {
+                $builder->withCount($counter);
+                continue;
+            }
+
+            $camelVersion = Str::camel($counter);
+            if( \method_exists($this, $camelVersion) ) {
+                $builder->withCount($camelVersion);
+                continue;
             }
         }
 
@@ -85,16 +87,16 @@ trait ApiModelBehavior
 
     public function applySorts($request, $builder)
     {
-        $sort_info = $request->sort ? $request->sort : null;
+        $sorts = $request->sort ? explode(',', $request->sort) : null;
 
-        if ($sort_info) {
-            $sorts = explode(',', $sort_info);
+        if ( !$sorts ) {
+            return $builder;
+        }
 
-            foreach ($sorts as $sort) {
-                $sd = explode(":", $sort);
-                if ($sd && count($sd) == 2) {
-                    $builder->orderBy(trim($sd[0]), trim($sd[1]));
-                }
+        foreach ($sorts as $sort) {
+            $sd = explode(":", $sort);
+            if ($sd && count($sd) == 2) {
+                $builder->orderBy(trim($sd[0]), trim($sd[1]));
             }
         }
 
