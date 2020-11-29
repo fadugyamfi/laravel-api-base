@@ -137,6 +137,27 @@ class Todo extends ApiModel
 }
 ```
 
+You can also implement the `ApiModelInterface` and use the `ApiModelBehavior` Trait and for existing Models that cannot extend the
+the `ApiModel` class directly for other reasons, e.g. the default `User` model
+
+```php
+
+namespace App\Models;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use LaravelApiBase\Models\ApiModelInterface;
+use LaravelApiBase\Models\ApiModelBehavior;
+
+class User extends Authenticatable implements ApiModelInterface
+{
+    use Notifiable, ApiModelBehavior;
+
+    // ...
+}
+```
+
+
 ### Observables Are Encouraged
 When working with your API Models, we encourage you to use Observers to listen and react to events in your model for the cleanest code possible. Example:
 
@@ -207,7 +228,7 @@ namespace App\Http\Requests;
 
 use LaravelApiBase\Http\Requests\ApiRequest;
 
-class TodoRequest extends ApiRequest
+class TodoRequest extends FormRequest implements ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -232,7 +253,23 @@ class TodoRequest extends ApiRequest
         ];
     }
 
-}
+    /**
+     * Returns an array of descriptions and examples for the fields being validated
+     * so the documentation for the endpoints can be validated
+     */
+    public function bodyParameters() {
+        return [
+            'title' => [
+                'description' => 'Title of Todo',
+                'example' => 'Publish Library'
+            ],
+            'description' => [
+                'description' => 'Description of task',
+                'example' => 'Remember to publish library code'
+            ]
+        ];
+    }
+ }
 
 ```
 
@@ -319,8 +356,8 @@ class TodoController extends ApiController
     public function __construct(Todo $todo) {
         parent::__construct($todo);
 
-        $this->Request = SpecialTodoRequest::class;
-        $this->Resource = SpecialTodoResource::class;
+        $this->setApiFormRequest(SpecialTodoRequest::class);
+        $this->setApiResource(SpecialTodoResource::class);
     }
 }
 ```
@@ -344,6 +381,13 @@ Route::get('todos/{id}/subtasks', 'TodoController@subtasks');
 Route::apiResource('todos', 'TodoController');
 ```
 
+## Generating API Documentation
+
+This library is designed to work with the [Scribe Documentation Generator](https://github.com/knuckleswtf/scribe). Install the library
+and run the following command to generate your documentation.
+```
+php artisan scribe:generate
+```
 
 
 ### Submitting bugs and feature requests
