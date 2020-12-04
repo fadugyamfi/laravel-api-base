@@ -351,11 +351,12 @@ use App\Http\Requests\Specials\SpecialTodoRequest;
 use App\Http\Resources\Specials\SpecialTodoResource;
 use LaravelApiBase\Http\Controllers\ApiController;
 
-class TodoController extends ApiController
+class TodoController extends Controller
 {
-    public function __construct(Todo $todo) {
-        parent::__construct($todo);
+    use ApiControllerBehavior;
 
+    public function __construct(Todo $todo) {
+        $this->setApiModel($todo);
         $this->setApiFormRequest(SpecialTodoRequest::class);
         $this->setApiResource(SpecialTodoResource::class);
     }
