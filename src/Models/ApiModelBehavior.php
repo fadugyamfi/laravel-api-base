@@ -108,7 +108,7 @@ trait ApiModelBehavior
      */
     public function getById($id, Request $request)
     {
-        $builder = $this->where($this->getKeyName(), $id);
+        $builder = $this->where($this->getQualifiedKeyName(), $id);
 
         $builder = $this->includeCounts($request, $builder);
         $builder = $this->includeContains($request, $builder);
@@ -121,7 +121,7 @@ trait ApiModelBehavior
     {
         $data = $this->create($request->all());
 
-        $builder = $this->where($this->getKeyName(), $data->id);
+        $builder = $this->where($this->getQualifiedKeyName(), $data->id);
         $builder = $this->includeContains($request, $builder);
         $builder = $this->includeCounts($request, $builder);
 
@@ -142,7 +142,7 @@ trait ApiModelBehavior
         $dataModel->fill($request->all());
         $dataModel->save();
 
-        $builder = $this->where($this->getKeyName(), $id);
+        $builder = $this->where($this->getQualifiedKeyName(), $id);
         $builder = $this->includeContains($request, $builder);
         $builder = $this->includeCounts($request, $builder);
 
