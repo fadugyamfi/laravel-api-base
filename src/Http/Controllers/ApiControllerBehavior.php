@@ -115,9 +115,9 @@ trait ApiControllerBehavior
      *
      * @queryParam limit Total items to return e.g. `?limit=15`. Example: 3
      * @queryParam page Page of items to return e.g. `?page=1`. Example: 1
-     * @queryParam sort Sorting options e.g. `?sort=surname:asc,othernames:asc`. Example: id:asc
-     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
-     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
+     * @queryParam sort Sorting options e.g. `?sort=field1:asc,field2:asc` OR `?sort=latest/oldest`. Example: latest
+     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=relation1,relation2`. No-example
+     * @queryParam contain Contain data from related model e.g. `?contain=relation1,relation2`. No-example
      * @queryParam fieldName Pass any field and value to filter results e.g. `name=John&email=any@aol.com`. No-example
      *
      * @authenticated
@@ -136,8 +136,8 @@ trait ApiControllerBehavior
      * in the response using the `count` and `contain` query params
      *
      * @authenticated
-     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
-     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
+     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=relation1,relation2`. No-example
+     * @queryParam contain Contain data from related model e.g. `?contain=relation1,relation2`. No-example
      *
      * @response 400 {
      *  "status": "error",
@@ -187,8 +187,8 @@ trait ApiControllerBehavior
      * in the response using the `count` and `contain` query params
      *
      * @authenticated
-     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
-     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
+     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=relation1,relation2`. No-example
+     * @queryParam contain Contain data from related model e.g. `?contain=relation1,relation2`. No-example
      * @urlParam id integer required The id of the resource to view
      *
      * @response 404 {
@@ -220,8 +220,8 @@ trait ApiControllerBehavior
      * in the response using the `count` and `contain` query params
      *
      * @authenticated
-     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
-     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
+     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=relation1,relation2`. No-example
+     * @queryParam contain Contain data from related model e.g. `?contain=relation1,relation2`. No-example
      *
      * @response 400 {
      *  "status": "error",
@@ -334,9 +334,9 @@ trait ApiControllerBehavior
      *
      * @queryParam limit Total items to return e.g. `?limit=15`. Example: 3
      * @queryParam page Page of items to return e.g. `?page=1`. Example: 1
-     * @queryParam sort Sorting options e.g. `?sort=surname:asc,othernames:asc`. Example: id:asc
-     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=student,student_program`. No-example
-     * @queryParam contain Contain data from related model e.g. `?contain=program,currency`. No-example
+     * @queryParam sort Sorting options e.g. `?sort=field1:asc,field2:asc` OR `?sort=latest/oldest`. Example: latest
+     * @queryParam count Count related models. Alternatively `with_count` e.g. `?count=relation1,relation2`. No-example
+     * @queryParam contain Contain data from related model e.g. `?contain=relation1,relation2`. No-example
      * @queryParam fieldName Pass any field and value to search by e.g. `name=John&email=any@aol.com`. Search logic may use LIKE or `=` depending on field
      *
      * @authenticated

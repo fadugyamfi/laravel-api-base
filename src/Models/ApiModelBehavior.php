@@ -94,6 +94,16 @@ trait ApiModelBehavior
         }
 
         foreach ($sorts as $sort) {
+            if( strtolower($sort) == 'latest' ) {
+                $builder->latest();
+                continue;
+            }
+
+            if( strtolower($sort) == 'oldest' ) {
+                $builder->oldest();
+                continue;
+            }
+
             $sd = explode(":", $sort);
             if ($sd && count($sd) == 2) {
                 $builder->orderBy(trim($sd[0]), trim($sd[1]));
@@ -155,15 +165,15 @@ trait ApiModelBehavior
     {
         $record = $this->find($id);
 
-        if ($record) {
-            try {
-                return $record->delete();
-            } catch (\Exception $e) {
-                throw $e;
-            }
+        if( !$record ) {
+            return false;
         }
 
-        return false;
+        try {
+            return $record->delete();
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     /**
@@ -248,14 +258,12 @@ trait ApiModelBehavior
             foreach($operators as $op_key => $op_type) {
                 $key = strtolower($key);
                 $op_key = strtolower($op_key);
-
-                if( Str::endsWith($key, $op_key) === false ) {
-                    continue;
-                }
-
                 $column_name = Str::replaceLast($op_key,'',$key);
 
-                if( !in_array($column_name, $this->searcheableFields())){
+                $fieldEndsWithOperator = Str::endsWith($key, $op_key);
+                $columnIsSearchable = in_array($column_name, $this->searcheableFields());
+
+                if( !$fieldEndsWithOperator || !$columnIsSearchable ) {
                     continue;
                 }
 
