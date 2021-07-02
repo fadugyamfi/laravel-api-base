@@ -214,6 +214,7 @@ trait ApiModelBehavior
 
         $builder = $this->where($conditions);
         $builder = $this->buildSearchParams($request, $builder);
+        $builder = $this->applyFilters($request, $builder);
         $builder = $this->includeContains($request, $builder);
         $builder = $this->includeCounts($request, $builder);
         $builder = $this->applySorts($request, $builder);
@@ -229,6 +230,59 @@ trait ApiModelBehavior
         $builder = $this->buildSearchParams($request, $builder);
 
         return $builder->count();
+    }
+
+    public function applyFilters(Request $request, $builder) {
+        $operators = [
+            'eq' => '=',
+            'not' => '!=',
+            'gt' => '>',
+            'lt' => '<',
+            'gte' => '>=',
+            'lte' => '<=',
+            'like' => 'LIKE',
+            'in' => true,
+            'notIn' => true,
+            'isNull' => true,
+            'isNotNull' => true
+        ];
+
+        $filters = $request->input('filters', []);
+
+        foreach($filters as $column => $values) {
+            if (!in_array($column, $this->searcheableFields())) {
+                continue;
+            }
+
+            $valueParts = explode(":", $values);
+            $operator = "eq";
+            $operator_symbol = '=';
+            $value = null;
+
+            if(count($valueParts) > 1) {
+                $operator = $valueParts[0];
+                $operator_symbol = $operators[ $operator ] ?? '=';
+                $value = $valueParts[1];
+            } else {
+                $value = $valueParts[0];
+            }
+
+            if( $operator == 'in' ) {
+                $builder->whereIn($column, explode(',', $value));
+            } else if( $operator == strtolower('notIn') ) {
+                $builder->whereNotIn($column, explode(',', $value));
+            } else if( $operator == strtolower('isNull') ) {
+                $builder->whereNull($column);
+            } else if( $operator == strtolower('isNotNull') ) {
+                $builder->whereNotNull($column);
+            } else if( $operator == 'like' ) {
+                $builder->where($column, 'LIKE', "{$value}%");
+            } else {
+                $builder->where($column, $operator_symbol, $value);
+            }
+        }
+
+        return $builder;
     }
 
     public function buildSearchParams(Request $request, $builder) {
