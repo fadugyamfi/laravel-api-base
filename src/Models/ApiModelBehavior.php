@@ -3,6 +3,8 @@
 namespace LaravelApiBase\Models;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Support\Str;
 
@@ -94,15 +96,18 @@ trait ApiModelBehavior
         }
 
         foreach ($sorts as $sort) {
-            if( strtolower($sort) == 'latest' ) {
-                $builder->latest();
-                continue;
+            if ( Schema::hasColumn($this->table, $this->getCreatedAtColumn()) ) {
+                if( strtolower($sort) == 'latest' ) {
+                    $builder->latest();
+                    continue;
+                }
+
+                if( strtolower($sort) == 'oldest' ) {
+                    $builder->oldest();
+                    continue;
+                }
             }
 
-            if( strtolower($sort) == 'oldest' ) {
-                $builder->oldest();
-                continue;
-            }
 
             $sd = explode(":", $sort);
             if ($sd && count($sd) == 2) {
@@ -209,43 +214,23 @@ trait ApiModelBehavior
     }
 
     public function searchBuilder(Request $request) {
-
-        $conditions = [];
-
-        $builder = $this->where($conditions);
-        $builder = $this->buildSearchParams($request, $builder);
+        $builder = $this->buildSearchParams($request, self::query());
         $builder = $this->applyFilters($request, $builder);
         $builder = $this->includeContains($request, $builder);
         $builder = $this->includeCounts($request, $builder);
         $builder = $this->applySorts($request, $builder);
+
         return $builder;
     }
 
 
     public function count(Request $request)
     {
-        $conditions = [];
-
-        $builder = $this->where($conditions);
-        $builder = $this->buildSearchParams($request, $builder);
-
-        return $builder->count();
+        return $this->buildSearchParams($request, self::query())->count();
     }
 
     public function applyFilters(Request $request, $builder) {
-        $operators = [
-            'eq' => '=',
-            'not' => '!=',
-            'gt' => '>',
-            'lt' => '<',
-            'gte' => '>=',
-            'lte' => '<=',
-            'like' => 'LIKE',
-            'in' => true,
-            'notIn' => true,
-            'isNull' => true,
-            'isNotNull' => true
-        ];
+        $operators = $this->getQueryOperators();
 
         $filters = $request->input('filters', []);
 
@@ -267,37 +252,14 @@ trait ApiModelBehavior
                 $value = $valueParts[0];
             }
 
-            if( $operator == 'in' ) {
-                $builder->whereIn($column, explode(',', $value));
-            } else if( $operator == strtolower('notIn') ) {
-                $builder->whereNotIn($column, explode(',', $value));
-            } else if( $operator == strtolower('isNull') ) {
-                $builder->whereNull($column);
-            } else if( $operator == strtolower('isNotNull') ) {
-                $builder->whereNotNull($column);
-            } else if( $operator == 'like' ) {
-                $builder->where($column, 'LIKE', "{$value}%");
-            } else {
-                $builder->where($column, $operator_symbol, $value);
-            }
+            $builder = $this->applyOperators($builder, $column, $operator, $operator_symbol, $value);
         }
 
         return $builder;
     }
 
     public function buildSearchParams(Request $request, $builder) {
-        $operators = [
-            '_not' => '!=',
-            '_gt' => '>',
-            '_lt' => '<',
-            '_gte' => '>=',
-            '_lte' => '<=',
-            '_like' => 'LIKE',
-            '_in' => true,
-            '_notIn' => true,
-            '_isNull' => true,
-            '_isNotNull' => true
-        ];
+        $operators = $this->getQueryOperators();
 
         foreach ($request->all() as $key => $value) {
             if (in_array($key, $this->searcheableFields())) {
@@ -321,20 +283,43 @@ trait ApiModelBehavior
                     continue;
                 }
 
-                if( $op_key == '_in' ) {
-                    $builder->whereIn($column_name, explode(',', $value));
-                } else if( $op_key == strtolower('_notIn') ) {
-                    $builder->whereNotIn($column_name, explode(',', $value));
-                } else if( $op_key == strtolower('_isNull') ) {
-                    $builder->whereNull($column_name);
-                } else if( $op_key == strtolower('_isNotNull') ) {
-                    $builder->whereNotNull($column_name);
-                } else if( $op_key == '_like' ) {
-                    $builder->where($column_name, 'LIKE', "{$value}%");
-                } else {
-                    $builder->where($column_name, $op_type, $value);
-                }
+                $builder = $this->applyOperators($builder, $column_name, $op_key, $op_type, $value);
             }
+        }
+
+        return $builder;
+    }
+
+    private function getQueryOperators() {
+        return [
+            '_not' => '!=',
+            '_gt' => '>',
+            '_lt' => '<',
+            '_gte' => '>=',
+            '_lte' => '<=',
+            '_like' => 'LIKE',
+            '_in' => true,
+            '_notIn' => true,
+            '_isNull' => true,
+            '_isNotNull' => true
+        ];
+    }
+
+    private function applyOperators($builder, $column_name, $op_key, $op_type, $value) {
+        $column_name = $this->qualifyColumn($column_name);
+
+        if( $op_key == '_in' ) {
+            $builder->whereIn($column_name, explode(',', $value));
+        } else if( $op_key == strtolower('_notIn') ) {
+            $builder->whereNotIn($column_name, explode(',', $value));
+        } else if( $op_key == strtolower('_isNull') ) {
+            $builder->whereNull($column_name);
+        } else if( $op_key == strtolower('_isNotNull') ) {
+            $builder->whereNotNull($column_name);
+        } else if( $op_key == '_like' ) {
+            $builder->where($column_name, 'LIKE', "{$value}%");
+        } else {
+            $builder->where($column_name, $op_type, $value);
         }
 
         return $builder;
