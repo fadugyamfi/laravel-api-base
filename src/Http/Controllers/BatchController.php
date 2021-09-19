@@ -4,6 +4,8 @@ namespace LaravelApiBase\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use LaravelApiBase\Models\ApiModel;
 
@@ -27,14 +29,14 @@ class BatchController extends Controller {
                     continue;
                 }
 
+                $response = null;
                 $params = $r->params ?? [];
-                $req = Request::create($r->url, $r->method, $params);
 
-                // replace the inputs in the current request and set
-                $request->replace($req->input());
+                $req = Request::create($r->url, $r->method, $params, [], [], [], json_encode($params));
+                $req->headers->replace($request->headers->all());
 
                 // dispatch the new request
-                $response = Route::dispatch($req)->getContent();
+                $response = app()->handle($req)->getContent();
 
                 if (isset($r->request_id)) {
                     $output[$r->request_id] = json_decode($response);
@@ -52,6 +54,6 @@ class BatchController extends Controller {
             }
         }
 
-        return response()->json(array('responses' => $output));
+        return response()->json(['responses' => $output]);
     }
 }
