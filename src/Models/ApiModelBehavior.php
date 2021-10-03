@@ -306,7 +306,9 @@ trait ApiModelBehavior
     }
 
     private function applyOperators($builder, $column_name, $op_key, $op_type, $value) {
-        $column_name = $this->qualifyColumn($column_name);
+        $column_name = $this->shouldQualifyColumn($column_name)
+            ? $this->qualifyColumn($column_name)
+            : $column_name;
 
         if( $op_key == '_in' ) {
             $builder->whereIn($column_name, explode(',', $value));
@@ -323,5 +325,13 @@ trait ApiModelBehavior
         }
 
         return $builder;
+    }
+
+    public function shouldQualifyColumn($column_name) {
+        return in_array($column_name, [
+            $this->getCreatedAtColumn(),
+            $this->getUpdatedAtColumn(),
+            $this->getDeletedAtColumn()
+        ]);
     }
 }
