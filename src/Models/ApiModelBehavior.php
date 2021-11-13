@@ -35,27 +35,35 @@ trait ApiModelBehavior
     }
 
     public function includeContains(Request $request, $builder) {
-        if( $request->contain ) {
-            $contains = explode(',', $request->contain);
-            foreach($contains as $contain) {
-                $camelVersion = Str::camel(trim($contain));
-                if( \method_exists($this, $camelVersion) || strpos($contain, '.') !== false ) {
-                    if(strpos($contain, '.') !== false) {
-                        $parts = explode('.', $contain);
-                        $parts = array_map(function($part) {
-                            return Str::camel($part);
-                        }, $parts);
-                        $contain = implode(".", $parts);
-                    }
+        $contains = $request->contain ?? $request->include;
 
-                    $builder->with($camelVersion);
-                    continue;
-                }
+        if( !$contains ) {
+            return $builder;
+        }
 
-                if( \method_exists($this, $contain) || strpos($contain, '.') !== false ) {
-                    $builder->with(trim($contain));
-                    continue;
-                }
+        $contains = explode(',', $contains);
+        foreach($contains as $contain) {
+
+            $camelVersion = Str::camel(trim($contain));
+            if( \method_exists($this, $camelVersion) ) {
+                $builder->with($camelVersion);
+                continue;
+            }
+
+            $snakeCase = Str::snake(trim($contain));
+            if( \method_exists($this, $snakeCase) ) {
+                $builder->with(trim($snakeCase));
+                continue;
+            }
+
+            if(strpos($contain, '.') !== false) {
+                $parts = array_map(function($part) {
+                    return Str::camel($part);
+                }, explode('.', $contain));
+                $contain = implode(".", $parts);
+
+                $builder->with($contain);
+                continue;
             }
         }
 
@@ -110,8 +118,10 @@ trait ApiModelBehavior
 
 
             $sd = explode(":", $sort);
-            if ($sd && count($sd) == 2) {
-                $builder->orderBy(trim($sd[0]), trim($sd[1]));
+            if ($sd && count($sd) > 0) {
+                count($sd) == 2
+                    ? $builder->orderBy(trim($sd[0]), trim($sd[1]))
+                    : $builder->orderBy(trim($sd[0]), 'asc');
             }
         }
 
@@ -329,9 +339,9 @@ trait ApiModelBehavior
 
     public function shouldQualifyColumn($column_name) {
         return in_array($column_name, [
-            $this->getCreatedAtColumn(),
-            $this->getUpdatedAtColumn(),
-            $this->getDeletedAtColumn()
+            $this->getCreatedAtColumn() ?? 'created_at',
+            $this->getUpdatedAtColumn() ?? 'updated_at',
+            $this->getDeletedAtColumn() ?? 'deleted_at'
         ]);
     }
 }
