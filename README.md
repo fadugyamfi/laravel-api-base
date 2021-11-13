@@ -226,7 +226,7 @@ happen behind the scenes.
 
 namespace App\Http\Requests;
 
-use LaravelApiBase\Http\Requests\ApiRequest;
+use LaravelApiBase\Http\Requests\ApiFormRequest;
 
 class TodoRequest extends FormRequest implements ApiFormRequest
 {
