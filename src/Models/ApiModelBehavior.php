@@ -31,7 +31,7 @@ trait ApiModelBehavior
         $limit = $request->limit ?? 30;
         $builder =  $this->searchBuilder($request);
 
-        return $builder->paginate($limit);
+        return $limit == 'max' ? $builder->get() : $builder->paginate($limit);
     }
 
     public function includeContains(Request $request, $builder) {
@@ -150,9 +150,7 @@ trait ApiModelBehavior
         $builder = $this->includeContains($request, $builder);
         $builder = $this->includeCounts($request, $builder);
 
-        $dataModel = $builder->first();
-
-        return $dataModel;
+        return $builder->first();
     }
 
 
@@ -171,9 +169,8 @@ trait ApiModelBehavior
         $builder = $this->includeContains($request, $builder);
         $builder = $this->includeCounts($request, $builder);
 
-        $dataModel = $builder->first();
-
-        return $dataModel;
+        // in case the returned model from the search is null, then use the initially found model
+        return $builder->first() ?? $dataModel;
     }
 
     public function remove($id)
@@ -339,6 +336,7 @@ trait ApiModelBehavior
 
     public function shouldQualifyColumn($column_name) {
         return in_array($column_name, [
+            $this->getPrimaryKey() ?? 'id',
             $this->getCreatedAtColumn() ?? 'created_at',
             $this->getUpdatedAtColumn() ?? 'updated_at',
             $this->getDeletedAtColumn() ?? 'deleted_at'
