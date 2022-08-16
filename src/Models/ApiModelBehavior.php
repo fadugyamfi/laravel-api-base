@@ -272,7 +272,7 @@ trait ApiModelBehavior
             if (in_array($key, $this->searcheableFields())) {
                 switch ($key) {
                   default:
-                      $builder->where($key, '=', $value);
+                      $builder->where( $this->qualifyColumn($key), '=', $value);
                       break;
               }
             }
@@ -335,11 +335,15 @@ trait ApiModelBehavior
     }
 
     public function shouldQualifyColumn($column_name) {
-        return in_array($column_name, [
-            $this->getPrimaryKey() ?? 'id',
+        $columns = [
             $this->getCreatedAtColumn() ?? 'created_at',
             $this->getUpdatedAtColumn() ?? 'updated_at',
-            $this->getDeletedAtColumn() ?? 'deleted_at'
-        ]);
+        ];
+
+        if( \method_exists($this, 'getDeletedAtColumn') ) {
+            array_push($columns, $this->getDeletedAtColumn() ?? 'deleted_at');
+        }
+
+        return in_array($column_name, $columns);
     }
 }
