@@ -269,10 +269,12 @@ trait ApiModelBehavior
         $operators = $this->getQueryOperators();
 
         foreach ($request->all() as $key => $value) {
+            if( !is_numeric($value) && empty($value) ) continue;
+
             if (in_array($key, $this->searcheableFields())) {
                 switch ($key) {
                   default:
-                      $builder->where( $this->qualifyColumn($key), '=', $value);
+                      $builder->where( $this->qualifyColumnInTable($key), '=', $value);
                       break;
               }
             }
@@ -300,6 +302,7 @@ trait ApiModelBehavior
     private function getQueryOperators() {
         return [
             '_not' => '!=',
+            '_eq' => '=',
             '_gt' => '>',
             '_lt' => '<',
             '_gte' => '>=',
@@ -313,6 +316,10 @@ trait ApiModelBehavior
     }
 
     private function applyOperators($builder, $column_name, $op_key, $op_type, $value) {
+        if( !is_numeric($value) && empty($value) ) {
+            return $builder;
+        }
+
         $column_name = $this->shouldQualifyColumn($column_name)
             ? $this->qualifyColumn($column_name)
             : $column_name;
@@ -345,5 +352,25 @@ trait ApiModelBehavior
         }
 
         return in_array($column_name, $columns);
+    }
+
+
+    /**
+     * Qualify the given column name by the model's table.
+     *
+     * @param  string  $column
+     * @return string
+     */
+    public function qualifyColumnInTable($column, $table = null)
+    {
+        if (str_contains($column, '.')) {
+            return $column;
+        }
+
+        if( $table != null ) {
+            return "{$table}.{$column}";
+        }
+
+        return $this->shouldQualifyColumn($column) ? $this->qualifyColumn($column) : $column;
     }
 }
