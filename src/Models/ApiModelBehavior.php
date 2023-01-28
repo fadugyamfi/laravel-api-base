@@ -307,7 +307,10 @@ trait ApiModelBehavior
             '_lt' => '<',
             '_gte' => '>=',
             '_lte' => '<=',
-            '_like' => 'LIKE',
+            '_like' => 'LIKE {x}%',
+            '_sw' => 'LIKE {x}%',
+            '_ew' => 'LIKE %{x}',
+            '_has' => 'LIKE %{x}%',
             '_in' => true,
             '_notIn' => true,
             '_isNull' => true,
@@ -332,8 +335,9 @@ trait ApiModelBehavior
             $builder->whereNull($column_name);
         } else if( $op_key == strtolower('_isNotNull') ) {
             $builder->whereNotNull($column_name);
-        } else if( $op_key == '_like' ) {
-            $builder->where($column_name, 'LIKE', "{$value}%");
+        } else if( str_contains($op_type, 'LIKE') ) {
+            $valData = str_replace("{x}", "{$value}", str_replace("LIKE ", "", $op_type));
+            $builder->where($column_name, 'LIKE', $valData);
         } else {
             $builder->where($column_name, $op_type, $value);
         }

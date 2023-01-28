@@ -64,7 +64,11 @@ GET /todos?id_in=1,3,5              // Gets a specific set of todos by ID
 GET /todos?description_isNull       // Get all Todos with a NULL description
 ```
 #### Available Search Operators
+- `_eq` - Equal Operator. `DEFAULT`
 - `_like` - Use a `LIKE {term}%` operation
+- `_has` - Use a `LIKE %{term}%` operation
+- `_sw` - Starts With. Use a `LIKE {term}%` operation
+- `_ew` - Ends With. Use a `LIKE %{term}` operation
 - `_gt` - Greater Than Operator
 - `_gte` - Greater Than or Equal To Operator
 - `_lt` - Less Than Operator
