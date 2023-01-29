@@ -318,16 +318,18 @@ all your restful endpoints
 namespace App\Http\Controllers;
 
 use App\Models\Todo;
-use LaravelApiBase\Http\Controllers\ApiController;
+use LaravelApiBase\Http\Controllers\ApiControllerBehavior;
 
 /**
- * By default, this Controller with locate the `App\Http\Requests\TodoRequest` and `App\Http\Resources\TodoResource`
+ * By default, this Controller will locate the `App\Http\Requests\TodoRequest` and `App\Http\Resources\TodoResource`
  * classes and use them for Request Validation and Response Formatting.
  */
-class TodoController extends ApiController
+class TodoController extends Controller
 {
+    use ApiControllerBehavior;
+
     public function __construct(Todo $todo) {
-        parent::__construct($todo);
+        $this->setApiModel($todo);
     }
 
     // you can add additional methods here as needed and connect them in your routes file
