@@ -11,8 +11,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "illuminate/http": "^5.2|^6|^7|^8|^9",
-        "illuminate/support": "^5.2|^6|^7|^8|^9"
+        "illuminate/http": "^5.2|^6|^7|^8|^9|^10",
+        "illuminate/support": "^5.2|^6|^7|^8|^9|^10"
     },
     "autoload": {
         "psr-4": {
