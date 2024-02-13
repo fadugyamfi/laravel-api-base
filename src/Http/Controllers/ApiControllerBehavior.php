@@ -18,9 +18,6 @@ trait ApiControllerBehavior
     /** @var Resource */
     public $Resource;
 
-    /** @var Collection */
-    public $Collection;
-
     public function setResource($resource = null)
     {
         $packageResNS = "\\LaravelApiBase\\Http\\Resources";
