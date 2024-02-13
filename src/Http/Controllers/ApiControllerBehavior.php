@@ -21,16 +21,11 @@ trait ApiControllerBehavior
     /** @var Collection */
     public $Collection;
 
-    /** @var Request */
-    public $Request;
-
     public function setResource($resource = null)
     {
         $packageResNS = "\\LaravelApiBase\\Http\\Resources";
-        $packageReqNS = "\\LaravelApiBase\\Http\\Requests";
 
         $resourceNS = "\\App\\Http\\Resources";
-        $requestNS = "\\App\\Http\\Requests";
         $modelClassName = str_replace('App\\Models\\', '', get_class($this->Model));
 
         if (!$this->Resource) {
@@ -54,28 +49,6 @@ trait ApiControllerBehavior
             }
 
         }
-
-        if (!$this->Request) {
-            $this->Request = $requestNS . "\\" . $modelClassName . 'Request';
-
-            try {
-                if (!class_exists($this->Request)) {
-                    throw new \Exception('Missing request');
-                }
-            } catch (\Error | \Exception $e) {
-                $this->Request = $packageReqNS . "\\ApiRequest";
-            }
-        }
-    }
-
-    /**
-     * Set the FormRequest object to use.
-     *
-     * @param FormRequest|string $request
-     */
-    public function setApiFormRequest($request)
-    {
-        $this->Request = is_object($request) ? get_class($request) : $request;
     }
 
     /**
@@ -157,17 +130,6 @@ trait ApiControllerBehavior
     public function store(Request $request)
     {
         try {
-            if (class_exists($this->Request)) {
-                $formRequest = new $this->Request($request->all());
-                $validator = Validator::make($request->all(), $formRequest->rules(), $formRequest->messages());
-
-                if ($validator->fails()) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => $validator->errors()->all(),
-                    ], 400);
-                }
-            }
 
             $dataModel = $this->Model->store($request);
             return new $this->Resource($dataModel);
@@ -247,21 +209,10 @@ trait ApiControllerBehavior
     public function update(Request $request, $id)
     {
         try {
-
-            if (class_exists($this->Request)) {
-                $formRequest = new $this->Request($request->all());
-                $validator = Validator::make($request->all(), $formRequest->rules(), $formRequest->messages());
-
-                if ($validator->fails()) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => $validator->errors()->all(),
-                    ], 400);
-                }
-            }
-
+            
             $dataModel = $this->Model->modify($request, $id);
             return new $this->Resource($dataModel);
+            
         } catch (NotFoundHttpException $e) {
             return response()->json([
                 'status' => 'failed',
