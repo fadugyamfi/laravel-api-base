@@ -156,7 +156,7 @@ trait ApiModelBehavior
 
     public function modify(Request $request, $id)
     {
-        $dataModel = $this->findOrFail($id);
+        $dataModel = $this->find($id);
 
         if (!$dataModel) {
             throw new NotFoundHttpException("Resource not found");
