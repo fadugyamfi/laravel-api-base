@@ -1,5 +1,5 @@
 {
-    "name": "fadugyamfi/laravel-api-base",
+    "name": "josevavia/laravel-api-base",
     "description": "Laravel Package for easy RESTful API development",
     "type": "library",
     "license": "MIT",
@@ -11,8 +11,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "illuminate/http": "^5.2|^6|^7|^8|^9",
-        "illuminate/support": "^5.2|^6|^7|^8|^9"
+        "illuminate/http": "^5.2|^6|^7|^8|^9|^10",
+        "illuminate/support": "^5.2|^6|^7|^8|^9|^10"
     },
     "autoload": {
         "psr-4": {

@@ -10,13 +10,19 @@ use Illuminate\Support\Str;
 
 trait ApiModelBehavior
 {
-
+    
     /**
      * Returns a list of fields that can be searched / filtered by. This includes
      * all fillable columns, the primary key column, and the created_at and updated_at columns
+     * 
+     * If model has an extraSearchableFields property, it will be merged with this list
      */
-    public function searcheableFields() {
-        return array_merge($this->fillable, [
+    public function searcheableFields()
+    {
+        if (property_exists($this, 'extraSearchableFields')) {
+            $fields = $this->extraSearchableFields;
+        }
+        return array_merge($fields ?? [], $this->fillable, [
             $this->getKeyName(),
             $this->getCreatedAtColumn(),
             $this->getUpdatedAtColumn()
@@ -156,7 +162,7 @@ trait ApiModelBehavior
 
     public function modify(Request $request, $id)
     {
-        $dataModel = $this->findOrFail($id);
+        $dataModel = $this->find($id);
 
         if (!$dataModel) {
             throw new NotFoundHttpException("Resource not found");
