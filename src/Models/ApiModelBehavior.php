@@ -231,7 +231,7 @@ trait ApiModelBehavior
     }
 
 
-    public function count(Request $request)
+    public function countRecords(Request $request)
     {
         return $this->buildSearchParams($request, self::query())->count();
     }

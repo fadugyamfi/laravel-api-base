@@ -359,7 +359,7 @@ trait ApiControllerBehavior
      */
     public function count(Request $request)
     {
-        $results = $this->Model->count($request);
+        $results = $this->Model->countRecords($request);
 
         return response()->json(['count' => $results]);
     }
