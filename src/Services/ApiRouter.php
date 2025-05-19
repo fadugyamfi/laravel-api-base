@@ -4,6 +4,9 @@ namespace LaravelApiBase\Services;
 
 use Illuminate\Routing\Router as BaseRouter;
 
+/**
+ * @deprecated since Laravel 12
+ */
 class ApiRouter extends BaseRouter {
 
     /**

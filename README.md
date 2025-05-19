@@ -21,14 +21,45 @@ Latest Laravel versions have auto dicovery and automatically add service provide
 LaravelApiBase\Providers\LaravelApiBaseProvider::class,
 ```
 
+## Routing Configuration
+
+### Laravel 10 and below
 Lastly, and most importantly, this package provides an updated `Router`, i.e. `LaravelApiBase\Services\ApiRouter` that you must configure in your `app/bootstrap/app.php` file to get the full benefits of the api. You need to add the following code in the file.
 
 ```php
 /**
+ * Laravel 10 and below
+ * 
  * Important change to ensure the right router version is used with the Laravel API Base package
  */
 $app->singleton('router', LaravelApiBase\Services\ApiRouter::class);
 
+```
+### Laravel 11 and above
+In Laravel 11, instead of a completely separate "custom router," you primarily rely on the standard Laravel routing system with enhanced capabilities. In Laravel 11, replacing the router by binding a singleton to the container `(e.g., app()->singleton('router', ...))` is not recommended and not officially supported. Laravel’s routing system has become more tightly integrated and relies on internal contracts and bootstrapping that can break if you override the router in this way.
+
+**Best Practice** in Laravel 11 is to use route macros to extend routing functionality to add support for the `search` and `count` endpoints.
+
+```php
+<?php
+// ...existing code...
+use Illuminate\Support\Facades\Route;
+
+public function boot(): void
+{
+    // ...existing code...
+    Route::macro('apiResourceWithExtras', function ($name, $controller) {
+        Route::get("$name/search", [$controller, 'search']);
+        Route::get("$name/count", [$controller, 'count']);
+        Route::apiResource($name, $controller);
+    });
+}
+// ...existing code...
+```
+Now in `api.php`
+```php
+<?php
+Route::apiResourceWithExtras('your-resource', YourResourceController::class);
 ```
 
 
